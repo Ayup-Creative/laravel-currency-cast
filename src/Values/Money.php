@@ -139,6 +139,25 @@ final class Money implements \Stringable
     }
 
     /**
+     * "Discounts" the current amount by the given "percent" and returns a new instance.
+     *
+     * @see self::multiply()
+     *
+     * @param int|float $multiplier The value by which to multiply the amount.
+     * @return self A new instance with the multiplied amount.
+     */
+    public function discount(int $percent): self
+    {
+        if($percent === 0) {
+            return clone $self;
+        }
+
+        $multiplier = (float)(100 - $percent)/100;
+
+        return $this->multiply($multiplier);
+    }
+
+    /**
      * Creates and returns a shallow copy of the object.
      *
      * @return Money

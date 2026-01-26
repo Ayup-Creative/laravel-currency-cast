@@ -142,13 +142,13 @@ final class Money implements \Stringable
     /**
      * "Discounts" the current amount by the given "per cent" and returns a new instance.
      *
-     * @param int $percent
+     * @param int|float $percent
      * @return self A new instance with the multiplied amount.
      *
      * @throws Exception
      * @see self::multiply()
      */
-    public function discount(int $percent): self
+    public function discount(int|float $percent): self
     {
         if($percent < 0) {
             throw new \Exception('Cannot discount by a negative value.');

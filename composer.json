@@ -1,0 +1,22 @@
+{
+    "name": "ayup-creative/currency-cast",
+    "description": "Casts currency values to and from integers",
+    "require": {
+        "php": ">=8.2",
+        "illuminate/database": "^12",
+        "ext-intl": "*"
+    },
+    "autoload": {
+        "psr-4": {
+            "AyupCreative\\Casts\\Currency\\": "src/"
+        },
+        "files": ["src/helpers.php"]
+    },
+    "extra": {
+        "laravel": {
+            "providers": [
+                "AyupCreative\\Casts\\Currency\\LaravelCurrencyCastServiceProvider"
+            ]
+        }
+    }
+}

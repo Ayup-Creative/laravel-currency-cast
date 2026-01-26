@@ -3,6 +3,7 @@
 namespace AyupCreative\Casts\Currency\Values;
 
 use AyupCreative\Casts\Currency\Contracts\Tax;
+use Exception;
 use JetBrains\PhpStorm\Pure;
 use \NumberFormatter;
 
@@ -144,6 +145,7 @@ final class Money implements \Stringable
      * @param int $percent
      * @return self A new instance with the multiplied amount.
      *
+     * @throws Exception
      * @see self::multiply()
      */
     public function discount(int $percent): self

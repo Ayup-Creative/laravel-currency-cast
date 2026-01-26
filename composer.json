@@ -1,5 +1,5 @@
 {
-    "name": "ayup-creative/currency-cast",
+    "name": "ayup-creative/laravel-currency-cast",
     "description": "Casts currency values to and from integers",
     "require": {
         "php": ">=8.2",

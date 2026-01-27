@@ -13,11 +13,15 @@ class Currency implements CastsAttributes
             return null;
         }
 
-        $currency = match(true) {
+        $column = match(true) {
             method_exists($model, 'getCurrencyCode') => $model->getCurrencyCode(),
             property_exists($model, 'currencyCode') => $model->currencyCode,
             default => config('currency.currency_code')
         };
+
+        $column = value($column);
+
+        $currency = $model->hasAttribute($column) ? $model->{$column} : $column;
 
         return app(Money::class, ['amount' => $value, 'currency' => $currency]);
     }

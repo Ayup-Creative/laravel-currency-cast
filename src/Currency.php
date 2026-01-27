@@ -13,7 +13,13 @@ class Currency implements CastsAttributes
             return null;
         }
 
-        return app(Money::class, ['amount' => $value]);
+        $currency = match(true) {
+            method_exists($model, 'getCurrencyCode') => $model->getCurrencyCode(),
+            property_exists($model, 'currencyCode') => $model->currencyCode,
+            default => config('currency.currency_code')
+        };
+
+        return app(Money::class, ['amount' => $value, 'currency' => $currency]);
     }
 
     public function set($model, string $key, $value, array $attributes): array

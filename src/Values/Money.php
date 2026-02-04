@@ -163,6 +163,51 @@ final class Money implements \Stringable
         return $this->multiply($multiplier);
     }
 
+    public function isGreatThan(self $other): bool
+    {
+        $this->assertSameCurrency($other);
+        return $this->raw() > $other->raw();
+    }
+
+    public function isLessThan(self $other): bool
+    {
+        $this->assertSameCurrency($other);
+        return $this->raw() < $other->raw();
+    }
+
+    public function isEqualTo(self $other): bool
+    {
+        $this->assertSameCurrency($other);
+        return $this->raw() === $other->raw();
+    }
+
+    public function isZero(): bool
+    {
+        return $this->raw() === 0;
+    }
+
+    public function isPositive(): bool
+    {
+        return $this->raw() > 0;
+    }
+
+    public function isNegative(): bool
+    {
+        return $this->raw() < 0;
+    }
+
+    public function isGreaterThanOrEqualTo(self $other): bool
+    {
+        $this->assertSameCurrency($other);
+        return $this->raw() >= $other->raw();
+    }
+
+    public function isLessThanOrEqualTo(self $other): bool
+    {
+        $this->assertSameCurrency($other);
+        return $this->raw() <= $other->raw();
+    }
+
     /**
      * Creates and returns a shallow copy of the object.
      *

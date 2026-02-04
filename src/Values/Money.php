@@ -163,45 +163,90 @@ final class Money implements \Stringable
         return $this->multiply($multiplier);
     }
 
+    /**
+     * Compares the current object with another instance to determine if it is greater.
+     *
+     * @param self $other The instance to compare against.
+     * @return bool True if the current object is greater than the provided instance, otherwise false.
+     */
     public function isGreatThan(self $other): bool
     {
         $this->assertSameCurrency($other);
         return $this->raw() > $other->raw();
     }
 
+    /**
+     * Compares the current object with another to determine if it is less than the other.
+     *
+     * @param self $other The object to compare against.
+     * @return bool True if the current object is less than the other, false otherwise.
+     */
     public function isLessThan(self $other): bool
     {
         $this->assertSameCurrency($other);
         return $this->raw() < $other->raw();
     }
 
+    /**
+     * Determines whether the current object is equal to another object of the same type.
+     *
+     * @param self $other The object to compare with the current object.
+     * @return bool True if the objects are equal, otherwise false.
+     */
     public function isEqualTo(self $other): bool
     {
         $this->assertSameCurrency($other);
         return $this->raw() === $other->raw();
     }
 
+    /**
+     * Determines if the value is zero.
+     *
+     * @return bool True if the value equals zero, false otherwise.
+     */
     public function isZero(): bool
     {
         return $this->raw() === 0;
     }
 
+    /**
+     * Determines whether the value is positive.
+     *
+     * @return bool True if the value is greater than zero, otherwise false.
+     */
     public function isPositive(): bool
     {
         return $this->raw() > 0;
     }
 
+    /**
+     * Determines if the value is negative.
+     *
+     * @return bool True if the value is negative, otherwise false.
+     */
     public function isNegative(): bool
     {
         return $this->raw() < 0;
     }
 
+    /**
+     * Compares the current object with another instance to determine if it is greater than or equal.
+     *
+     * @param self $other The other instance to compare against.
+     * @return bool True if the current object is greater than or equal to the other instance, false otherwise.
+     */
     public function isGreaterThanOrEqualTo(self $other): bool
     {
         $this->assertSameCurrency($other);
         return $this->raw() >= $other->raw();
     }
 
+    /**
+     * Compares the current object to another instance to determine if it is less than or equal to the given instance.
+     *
+     * @param self $other The instance to compare against.
+     * @return bool True if the current instance is less than or equal to the given instance, otherwise false.
+     */
     public function isLessThanOrEqualTo(self $other): bool
     {
         $this->assertSameCurrency($other);

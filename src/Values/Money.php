@@ -31,6 +31,22 @@ final class Money implements \Stringable
     ) {}
 
     /**
+     * Creates a new instance from a floating-point amount.
+     *
+     * @param float $amount The monetary amount as a float.
+     * @param string $currency The currency code (defaults to 'GBP').
+     * @param int $rounding_mode The rounding mode to apply when rounding the amount (defaults to PHP_ROUND_HALF_UP).
+     *
+     * @return self A new instance initialized with the converted amount and specified currency.
+     */
+    public static function fromFloat(float $amount, string $currency = 'GBP', int $rounding_mode = PHP_ROUND_HALF_UP): self
+    {
+        $amount = round($amount * 100, 2, $rounding_mode);
+
+        return new self((int) $amount, $currency, $rounding_mode);
+    }
+
+    /**
      * Retrieves the raw integer value of the amount.
      *
      * @return int The raw amount value.

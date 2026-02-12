@@ -2,9 +2,7 @@
 
 namespace AyupCreative\Casts\Currency\Values;
 
-use AyupCreative\Casts\Currency\Contracts\Tax;
 use Exception;
-use JetBrains\PhpStorm\Pure;
 use \NumberFormatter;
 
 /**

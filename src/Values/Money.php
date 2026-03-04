@@ -2,6 +2,8 @@
 
 namespace AyupCreative\Casts\Currency\Values;
 
+use AyupCreative\Casts\Currency\Concerns\Wireable as WireableFeature;
+use AyupCreative\Casts\Currency\Contacts\Wireable as WireableInterface;
 use Exception;
 use \NumberFormatter;
 
@@ -12,8 +14,10 @@ use \NumberFormatter;
  * rounding, formatting, addition, and subtraction, while maintaining currency
  * integrity. It also supports tax calculations based on configuration settings.
  */
-final class Money implements \Stringable
+final class Money implements \Stringable, WireableInterface
 {
+    use WireableFeature;
+
     /**
      * Initializes a new instance of the class with the specified parameters.
      *

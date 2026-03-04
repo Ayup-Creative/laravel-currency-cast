@@ -14,7 +14,7 @@ use \NumberFormatter;
  * rounding, formatting, addition, and subtraction, while maintaining currency
  * integrity. It also supports tax calculations based on configuration settings.
  */
-final class Money implements \Stringable, WireableInterface
+final class Money implements \Stringable, WireableInterface, \JsonSerializable
 {
     use WireableFeature;
 
@@ -372,5 +372,17 @@ final class Money implements \Stringable, WireableInterface
                 "Currency mismatch: {$this->currency} vs {$other->currency}"
             );
         }
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function jsonSerialize(): mixed
+    {
+        return [
+            'amount' => $this->amount,
+            'currency' => $this->currency,
+            'rounding_mode' => $this->rounding_mode,
+        ];
     }
 }

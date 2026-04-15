@@ -27,15 +27,11 @@ class CurrencyCastTest extends UnitTestCase
     {
         $model = new TestModel();
 
-        // BUG IDENTIFIED: When setting an integer 1000, the caster multiplies it by 100,
-        // effectively making it 100,000 (cents). This is unexpected if the intention was to provide raw cents.
+        // FIX VERIFIED: When setting an integer 1000, the caster treats it as raw cents.
         $model->price = 1000;
-        if ($model->price->raw() !== 100000) {
-            $this->markTestIncomplete('BUG IDENTIFIED: Setting price to 1000 resulted in ' . $model->price->raw() . ' cents instead of 1000.');
-        }
 
         $this->assertInstanceOf(Money::class, $model->price);
-        $this->assertEquals(100000, $model->price->raw());
+        $this->assertEquals(1000, $model->price->raw());
         $this->assertEquals('GBP', $model->price->currency());
     }
 

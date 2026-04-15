@@ -22,13 +22,8 @@ class MoneyTest extends UnitTestCase
         $money = Money::fromFloat(1.23);
         $this->assertEquals(123, $money->raw());
 
-        // BUG IDENTIFIED: 1.235 should be 124 (with HALF_UP), but current implementation gives 123.
-        // We mark this as incomplete to identify the bug without failing the entire suite.
+        // FIX VERIFIED: 1.235 should be 124 (with HALF_UP)
         $money = Money::fromFloat(1.235);
-        if ($money->raw() !== 124) {
-            $this->markTestIncomplete('BUG IDENTIFIED: Money::fromFloat(1.235) returned ' . $money->raw() . ' instead of 124 due to incorrect rounding/casting.');
-        }
-        
         $this->assertEquals(124, $money->raw());
     }
 
@@ -162,28 +157,36 @@ class MoneyTest extends UnitTestCase
         $this->assertEquals('GBP', $m->currency()); // Default should be GBP
     }
 
-    public function test_sum_mismatch_exception()
+    public function test_it_can_sum_inferred_currency()
     {
         $moneys = [
             new Money(100, 'USD'),
             new Money(200, 'USD'),
         ];
 
+        $sum = Money::sum($moneys);
+        $this->assertEquals(300, $sum->raw());
+        $this->assertEquals('USD', $sum->currency());
+    }
+
+    public function test_sum_mismatch_exception()
+    {
+        $moneys = [
+            new Money(100, 'USD'),
+            new Money(200, 'GBP'),
+        ];
+
         $this->expectException(InvalidArgumentException::class);
         $this->expectExceptionMessage('Currency mismatch in sum().');
 
-        // This should fail because the default expected currency is 'GBP'
         Money::sum($moneys);
     }
 
-    public function test_clone_recursion_bug()
+    public function test_clone_works_without_recursion()
     {
         $money = new Money(100, 'GBP');
-        try {
-            $cloned = clone $money;
-            $this->assertEquals(100, $cloned->raw());
-        } catch (\Error $e) {
-            $this->markTestIncomplete('BUG IDENTIFIED: Clone failed due to infinite recursion in Money::__clone(). Error: ' . $e->getMessage());
-        }
+        $cloned = clone $money;
+        $this->assertEquals(100, $cloned->raw());
+        $this->assertNotSame($money, $cloned);
     }
 }

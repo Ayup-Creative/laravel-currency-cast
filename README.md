@@ -120,3 +120,19 @@ Run the test suite using PHPUnit:
 ```bash
 composer test
 ```
+
+## Development
+
+### Pre-commit Hooks
+
+This repository uses [pre-commit](https://pre-commit.com/) to ensure code quality and commit message standards.
+
+To install the hooks, run:
+
+```bash
+pre-commit install
+```
+
+The hooks include:
+- `conventional-pre-commit`: Validates commit messages follow the conventional commit standard.
+- `phpunit`: Runs the full test suite before each commit to ensure stability.

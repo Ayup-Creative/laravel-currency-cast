@@ -8,11 +8,11 @@ use Exception;
 use \NumberFormatter;
 
 /**
- * Represents a monetary value with associated currency and tax configuration.
+ * Represents a monetary value with associated currency.
  *
  * This class provides functionality to handle monetary computations, such as
  * rounding, formatting, addition, and subtraction, while maintaining currency
- * integrity. It also supports tax calculations based on configuration settings.
+ * integrity.
  */
 final class Money implements \Stringable, WireableInterface, \JsonSerializable
 {
@@ -24,7 +24,6 @@ final class Money implements \Stringable, WireableInterface, \JsonSerializable
      * @param int $amount The amount value.
      * @param string $currency The currency code, default is 'GBP'.
      * @param int $rounding_mode The rounding mode, default is PHP_ROUND_HALF_UP.
-     * @param bool $includes_tax Indicates whether the amount includes tax, default is false.
      */
     public function __construct(
         private readonly int $amount,
@@ -43,7 +42,7 @@ final class Money implements \Stringable, WireableInterface, \JsonSerializable
      */
     public static function fromFloat(float $amount, string $currency = 'GBP', int $rounding_mode = PHP_ROUND_HALF_UP): self
     {
-        $amount = round($amount * 100, 2, $rounding_mode);
+        $amount = round($amount * 100, 0, $rounding_mode);
 
         return new self((int) $amount, $currency, $rounding_mode);
     }
@@ -142,10 +141,6 @@ final class Money implements \Stringable, WireableInterface, \JsonSerializable
      */
     public function multiply(float|int $multiplier): self
     {
-        if ($multiplier < 0) {
-            throw new \InvalidArgumentException('Multiplier must be non-negative.');
-        }
-
         $result = ((float) $this->amount) * (float) $multiplier;
         $value = (int) round($result, 0, $this->rounding_mode);
 
@@ -168,10 +163,6 @@ final class Money implements \Stringable, WireableInterface, \JsonSerializable
      */
     public function discount(int|float $percent): self
     {
-        if($percent < 0) {
-            throw new \Exception('Cannot discount by a negative value.');
-        }
-
         if($percent === 0) {
             return clone $this;
         }
@@ -271,15 +262,6 @@ final class Money implements \Stringable, WireableInterface, \JsonSerializable
         return $this->raw() <= $other->raw();
     }
 
-    /**
-     * Creates and returns a shallow copy of the object.
-     *
-     * @return Money
-     */
-    public function __clone()
-    {
-        return clone $this;
-    }
 
     /**
      * Sums a collection of currency objects and returns a new currency object.
@@ -299,25 +281,30 @@ final class Money implements \Stringable, WireableInterface, \JsonSerializable
      */
     public static function sum(
         iterable $currencies,
-        string $currency = 'GBP',
+        ?string $currency = null,
         int $rounding_mode = PHP_ROUND_HALF_UP
     ): self
     {
         $total = 0;
+        $inferredCurrency = $currency;
 
         foreach ($currencies as $money) {
             if (! $money instanceof self) {
                 throw new \InvalidArgumentException('All values must be Currency objects.');
             }
 
-            if ($money->currency !== $currency) {
+            if ($inferredCurrency === null) {
+                $inferredCurrency = $money->currency;
+            }
+
+            if ($money->currency !== $inferredCurrency) {
                 throw new \InvalidArgumentException('Currency mismatch in sum().');
             }
 
             $total += $money->amount;
         }
 
-        return new self($total, $currency, $rounding_mode);
+        return new self($total, $inferredCurrency ?? 'GBP', $rounding_mode);
     }
 
     /**

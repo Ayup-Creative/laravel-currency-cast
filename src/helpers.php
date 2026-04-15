@@ -7,11 +7,18 @@ if(!function_exists('money')) {
      * Converts a given amount into a Money value object.
      *
      * @param int $amount The monetary amount
+     * @param string|null $currency The currency code (optional)
      *
      * @return Money The resulting Money value object.
      */
-    function money(int $amount): Money
+    function money(int $amount, ?string $currency = null): Money
     {
-        return app(Money::class, compact('amount'));
+        $params = ['amount' => $amount];
+
+        if ($currency !== null) {
+            $params['currency'] = $currency;
+        }
+
+        return app(Money::class, $params);
     }
 }

@@ -36,6 +36,10 @@ class Currency implements CastsAttributes
             return [$key => $value->raw()];
         }
 
+        if (is_int($value)) {
+            return [$key => $value];
+        }
+
         // Allow floats / numeric strings
         return [$key => (int) round(((float) $value) * 100)];
     }

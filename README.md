@@ -113,31 +113,6 @@ class Product extends Model
 
 If neither `currencyCode` property nor `getCurrencyCode()` method exists, the caster will look for a configuration value: `config('currency.currency_code')`.
 
-## Identified Bugs & Limitations
-
-During the creation of the test suite, several issues were identified in the current implementation:
-
-1.  **Rounding Bug in `Money::fromFloat()`**:
-    The method currently uses `round($amount * 100, 2)` before casting to an integer. This results in incorrect rounding for values with more than 2 decimal places. For example, `Money::fromFloat(1.235)` results in `123` cents instead of `124`.
-    
-2.  **Infinite Recursion in `Money::__clone()`**:
-    The `__clone()` method contains `return clone $this;`, which causes a stack overflow (infinite recursion) when the object is cloned.
-
-3.  **Caster `set()` Behavior**:
-    The `Currency` caster's `set()` method automatically multiplies any numeric value by 100. If you attempt to set an attribute using a value that is already in cents (e.g., `1000`), it will be stored as `100000` (e.g., £1000.00 instead of £10.00).
-
-4.  **Negative Multiplier Restriction**:
-    `Money::multiply()` and `Money::discount()` explicitly throw exceptions for negative values, which prevents use cases involving credit notes or reversing monetary values.
-
-5.  **`Money::sum()` Currency Mismatch**:
-    The `sum()` method defaults to `'GBP'`. If summing a collection of other currencies (e.g., `USD`), you must explicitly pass the currency code as the second argument, even if all objects in the collection are already `USD`.
-
-7.  **Dead/Incorrect Imports**:
-    The `LaravelCurrencyCastServiceProvider` imports non-existent classes (`Taxes\Tax` and `Contracts\Tax`), which could cause issues if the provider is ever expanded or if strict static analysis is used.
-
-8.  **Missing Tax Implementation**:
-    The docstrings in the `Money` class mention support for tax calculations, but there is currently no implementation of tax logic within the class.
-
 ## Testing
 
 Run the test suite using PHPUnit:

@@ -6,16 +6,18 @@
         "ext-intl": "*"
     },
     "require-dev": {
-      "laravel/framework": "^12|^13.0",
-      "laravel/pint": "^1.0",
-      "orchestra/testbench": "^v10.0|v11.0",
-      "phpunit/phpunit": "^11"
+        "laravel/framework": "^12|^13.0",
+        "laravel/pint": "^1.0",
+        "orchestra/testbench": "^v10.0|v11.0",
+        "phpunit/phpunit": "^11"
     },
     "autoload": {
         "psr-4": {
             "AyupCreative\\Casts\\Currency\\": "src/"
         },
-        "files": ["src/helpers.php"]
+        "files": [
+            "src/helpers.php"
+        ]
     },
     "autoload-dev": {
         "psr-4": {

@@ -3,7 +3,6 @@
     "description": "Casts currency values to and from integers",
     "require": {
         "php": ">=8.2",
-        "illuminate/database": "^12",
         "ext-intl": "*"
     },
     "require-dev": {

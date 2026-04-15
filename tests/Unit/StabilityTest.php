@@ -53,6 +53,9 @@ class StabilityTest extends UnitTestCase
         $m2 = Money::fromFloat(1.235, 'GBP', PHP_ROUND_HALF_UP);
         $this->assertEquals(124, $m2->raw());
 
+        $m3 = Money::fromFloat(1.235, 'GBP', PHP_ROUND_HALF_DOWN);
+        $this->assertEquals(123, $m3->raw()); // This failed on PHP 8.5 due to precision, should be fixed now.
+        
         // PHP 8.4 RoundingMode support
         if (enum_exists(\RoundingMode::class)) {
             $m4 = Money::fromFloat(1.235, 'GBP', \RoundingMode::HalfAwayFromZero);

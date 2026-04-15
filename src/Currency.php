@@ -41,6 +41,7 @@ class Currency implements CastsAttributes
         }
 
         // Allow floats / numeric strings
-        return [$key => (int) round(((float) $value) * 100)];
+        // Fix: Round to 2 decimal places before converting to integer cents to avoid precision issues
+        return [$key => (int) round(round((float) $value, 2) * 100)];
     }
 }

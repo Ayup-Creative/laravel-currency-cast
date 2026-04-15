@@ -43,7 +43,8 @@ final class Money implements \Stringable, WireableInterface, \JsonSerializable
         $mode = self::resolveRoundingMode($rounding_mode);
 
         // Fix: Round to 2 decimal places before converting to integer cents to avoid precision issues
-        $amount = round($amount * 100, 0, $mode);
+        $rounded = round($amount, 2, $mode);
+        $amount = round($rounded * 100);
 
         return new self((int) $amount, $currency, $rounding_mode);
     }

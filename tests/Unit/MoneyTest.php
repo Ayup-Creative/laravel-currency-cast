@@ -149,6 +149,48 @@ class MoneyTest extends UnitTestCase
         $this->assertEquals('GBP', $fromWire->currency());
     }
 
+    public function test_json_serialization_with_rounding_mode_enum()
+    {
+        if (!enum_exists(\RoundingMode::class)) {
+            $this->markTestSkipped('RoundingMode enum not available');
+        }
+
+        $money = new Money(100, 'GBP', \RoundingMode::HalfAwayFromZero);
+        $json = json_encode($money);
+        $expected = json_encode([
+            'amount' => 100,
+            'currency' => 'GBP',
+            'rounding_mode' => [
+                'enum' => \RoundingMode::class,
+                'case' => 'HalfAwayFromZero',
+            ],
+        ]);
+        $this->assertEquals($expected, $json);
+    }
+
+    public function test_it_is_wireable_with_rounding_mode_enum()
+    {
+        if (!enum_exists(\RoundingMode::class)) {
+            $this->markTestSkipped('RoundingMode enum not available');
+        }
+
+        $money = new Money(100, 'GBP', \RoundingMode::HalfAwayFromZero);
+        $wire = $money->toLivewire();
+        $this->assertEquals([
+            'amount' => 100,
+            'currency' => 'GBP',
+            'rounding_mode' => [
+                'enum' => \RoundingMode::class,
+                'case' => 'HalfAwayFromZero',
+            ],
+        ], $wire);
+
+        $fromWire = Money::fromLivewire($wire);
+        $this->assertEquals(100, $fromWire->raw());
+        $this->assertEquals('GBP', $fromWire->currency());
+        $this->assertSame(\RoundingMode::HalfAwayFromZero, $fromWire->roundingMode());
+    }
+
     public function test_money_helper()
     {
         $m = money(100);

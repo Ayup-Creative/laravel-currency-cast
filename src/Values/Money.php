@@ -19,16 +19,14 @@ final class Money implements \Stringable, WireableInterface, \JsonSerializable
     use WireableFeature;
 
     /**
-     * Initializes a new instance of the class with the specified parameters.
-     *
      * @param int $amount The amount value.
      * @param string $currency The currency code, default is 'GBP'.
-     * @param int $rounding_mode The rounding mode, default is PHP_ROUND_HALF_UP.
+     * @param int|object $rounding_mode The rounding mode, default is PHP_ROUND_HALF_UP.
      */
     public function __construct(
         private readonly int $amount,
         private readonly string $currency = 'GBP',
-        private readonly int $rounding_mode = PHP_ROUND_HALF_UP
+        private readonly int|object $rounding_mode = PHP_ROUND_HALF_UP
     ) {}
 
     /**
@@ -36,13 +34,16 @@ final class Money implements \Stringable, WireableInterface, \JsonSerializable
      *
      * @param float $amount The monetary amount as a float.
      * @param string $currency The currency code (defaults to 'GBP').
-     * @param int $rounding_mode The rounding mode to apply when rounding the amount (defaults to PHP_ROUND_HALF_UP).
+     * @param int|object $rounding_mode The rounding mode to apply when rounding the amount (defaults to PHP_ROUND_HALF_UP).
      *
      * @return self A new instance initialized with the converted amount and specified currency.
      */
-    public static function fromFloat(float $amount, string $currency = 'GBP', int $rounding_mode = PHP_ROUND_HALF_UP): self
+    public static function fromFloat(float $amount, string $currency = 'GBP', int|object $rounding_mode = PHP_ROUND_HALF_UP): self
     {
-        $amount = round($amount * 100, 0, $rounding_mode);
+        $mode = self::resolveRoundingMode($rounding_mode);
+
+        // Fix: Round to 2 decimal places before converting to integer cents to avoid precision issues
+        $amount = round($amount * 100, 0, $mode);
 
         return new self((int) $amount, $currency, $rounding_mode);
     }
@@ -75,6 +76,16 @@ final class Money implements \Stringable, WireableInterface, \JsonSerializable
     public function currency(): string
     {
         return $this->currency;
+    }
+
+    /**
+     * Retrieves the rounding mode associated with the object.
+     *
+     * @return int|object The rounding mode.
+     */
+    public function roundingMode(): int|object
+    {
+        return $this->rounding_mode;
     }
 
     /**
@@ -123,8 +134,9 @@ final class Money implements \Stringable, WireableInterface, \JsonSerializable
             throw new \InvalidArgumentException('Divisor must be greater than zero.');
         }
 
+        $mode = self::resolveRoundingMode($this->rounding_mode);
         $result = ((float) $this->amount) / (float) $divisor;
-        $value = (int) round($result, 0, $this->rounding_mode);
+        $value = (int) round($result, 0, $mode);
 
         return new self(
             $value,
@@ -141,8 +153,9 @@ final class Money implements \Stringable, WireableInterface, \JsonSerializable
      */
     public function multiply(float|int $multiplier): self
     {
+        $mode = self::resolveRoundingMode($this->rounding_mode);
         $result = ((float) $this->amount) * (float) $multiplier;
-        $value = (int) round($result, 0, $this->rounding_mode);
+        $value = (int) round($result, 0, $mode);
 
 
         return new self(
@@ -282,7 +295,7 @@ final class Money implements \Stringable, WireableInterface, \JsonSerializable
     public static function sum(
         iterable $currencies,
         ?string $currency = null,
-        int $rounding_mode = PHP_ROUND_HALF_UP
+        int|object $rounding_mode = PHP_ROUND_HALF_UP
     ): self
     {
         $total = 0;
@@ -342,7 +355,31 @@ final class Money implements \Stringable, WireableInterface, \JsonSerializable
      */
     private function round(float $value): float
     {
-        return round($value, precision: 2, mode: $this->rounding_mode);
+        $mode = self::resolveRoundingMode($this->rounding_mode);
+
+        return round($value, precision: 2, mode: $mode);
+    }
+
+    /**
+     * Resolves the rounding mode to an integer for PHP < 8.4 compatibility.
+     */
+    private static function resolveRoundingMode(int|object $mode): int|object
+    {
+        if (PHP_VERSION_ID >= 80400 || !is_object($mode)) {
+            return $mode;
+        }
+
+        if (enum_exists(\RoundingMode::class) && $mode instanceof \RoundingMode) {
+            return match ($mode->name) {
+                'HalfAwayFromZero' => PHP_ROUND_HALF_UP,
+                'HalfTowardsZero' => PHP_ROUND_HALF_DOWN,
+                'HalfEven' => PHP_ROUND_HALF_EVEN,
+                'HalfOdd' => PHP_ROUND_HALF_ODD,
+                default => throw new \InvalidArgumentException("Rounding mode {$mode->name} is not supported on PHP < 8.4"),
+            };
+        }
+
+        return $mode;
     }
 
     /**
@@ -366,10 +403,19 @@ final class Money implements \Stringable, WireableInterface, \JsonSerializable
      */
     public function jsonSerialize(): mixed
     {
+        $roundingMode = $this->rounding_mode;
+
+        if (is_object($roundingMode) && enum_exists(\RoundingMode::class) && $roundingMode instanceof \RoundingMode) {
+            $roundingMode = [
+                'enum' => \RoundingMode::class,
+                'case' => $roundingMode->name,
+            ];
+        }
+
         return [
             'amount' => $this->amount,
             'currency' => $this->currency,
-            'rounding_mode' => $this->rounding_mode,
+            'rounding_mode' => $roundingMode,
         ];
     }
 }

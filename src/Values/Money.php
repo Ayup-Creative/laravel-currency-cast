@@ -178,7 +178,7 @@ final class Money implements \Stringable, WireableInterface, \JsonSerializable
      * @param self $other The instance to compare against.
      * @return bool True if the current object is greater than the provided instance, otherwise false.
      */
-    public function isGreatThan(self $other): bool
+    public function isGreaterThan(self $other): bool
     {
         $this->assertSameCurrency($other);
         return $this->raw() > $other->raw();

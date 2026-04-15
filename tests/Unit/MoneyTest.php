@@ -86,7 +86,7 @@ class MoneyTest extends UnitTestCase
         $m2 = new Money(200, 'GBP');
         $m3 = new Money(100, 'GBP');
 
-        $this->assertTrue($m2->isGreatThan($m1));
+        $this->assertTrue($m2->isGreaterThan($m1));
         $this->assertTrue($m1->isLessThan($m2));
         $this->assertTrue($m1->isEqualTo($m3));
         $this->assertFalse($m1->isEqualTo($m2));

@@ -57,7 +57,7 @@ $m1 = money(1000);
 $m2 = money(2000);
 
 $m1->isLessThan($m2); // true
-$m1->isGreatThan($m2); // false
+$m1->isGreaterThan($m2); // false
 $m1->isEqualTo(money(1000)); // true
 $m1->isZero(); // false
 $m1->isPositive(); // true
